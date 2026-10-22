@@ -1,0 +1,448 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Школа Астеропи</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,500&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: one centred column over a living night sky. Map of five towers, then one task card at a time. */
+:root{
+  --night:#0d1130; --ink:#171d4a; --ink2:#232b66; --line:#3b4594;
+  --gold:#f0c35a; --gold-d:#a67a22; --mint:#7fe0c8; --rose:#ff8da1;
+  --text:#f1edff; --mute:#a9aedb;
+  --display:'Alegreya',Georgia,'Times New Roman',serif;
+  --body:'Alegreya Sans','Segoe UI',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:radial-gradient(120% 55% at 50% 0%,var(--ink2),var(--night) 65%) var(--night);
+  color:var(--text);font:400 18px/1.45 var(--body);
+  padding-block:18px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  overflow-x:hidden;
+}
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:720px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;line-height:1.1}
+p{margin:0}
+.gr{font-family:var(--display);font-weight:500}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px;min-height:40px}
+.brand{font-family:var(--display);font-style:italic;font-size:20px;color:var(--gold)}
+.stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border:1px solid var(--line);border-radius:99px;background:rgba(23,29,74,.7);font-size:15px;font-variant-numeric:tabular-nums}
+.chip svg{width:16px;height:16px}
+
+/* buttons */
+.btn{background:var(--gold);color:#241a02;border:0;border-radius:12px;padding:13px 22px;font-weight:700;font-size:18px;box-shadow:0 3px 0 var(--gold-d);transition:transform .12s}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--gold-d)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--mute);border-radius:10px;padding:8px 14px;font-size:16px}
+.ghost:hover{border-color:var(--gold);color:var(--text)}
+
+/* start */
+.hero{text-align:center;padding-top:8px}
+.candles{display:flex;justify-content:center;gap:clamp(14px,6vw,38px);height:96px;margin-bottom:8px}
+.candle{width:16px;height:46px;border-radius:3px 3px 2px 2px;background:linear-gradient(90deg,#d9d2f5,#fff8e0 50%,#c9c1ee);position:relative;animation:bob 4.2s ease-in-out infinite}
+.candle::before{content:"";position:absolute;left:50%;top:-20px;width:11px;height:20px;transform:translateX(-50%);border-radius:50% 50% 50% 50%/65% 65% 35% 35%;background:radial-gradient(circle at 50% 70%,#fff6c8,var(--gold) 55%,#f08a2c);box-shadow:0 0 22px 7px rgba(240,195,90,.45);animation:flick .5s ease-in-out infinite alternate}
+.candle:nth-child(2){animation-delay:-1.4s;margin-top:18px}
+.candle:nth-child(3){animation-delay:-2.6s}
+.candle:nth-child(4){animation-delay:-.8s;margin-top:22px}
+.candle:nth-child(5){animation-delay:-3.3s}
+@keyframes bob{50%{transform:translateY(-12px)}}
+@keyframes flick{to{transform:translateX(-50%) scale(.9,1.08)}}
+.hero h1{font-size:clamp(38px,9vw,60px);color:var(--gold)}
+.hero .sub{font-size:20px;color:var(--mute);margin:10px auto 22px;max-width:30ch}
+.namebox{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.namebox input{background:var(--ink);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px 16px;font:inherit;width:min(260px,100%);text-align:center}
+.namebox input::placeholder{color:var(--mute)}
+
+/* map */
+.intro{margin-bottom:18px}
+.intro h2{font-size:30px}
+.intro p{color:var(--mute);margin-top:4px}
+.path{display:flex;flex-direction:column;gap:14px;position:relative;margin:0;padding:0;list-style:none}
+.node{display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:rgba(23,29,74,.82);text-align:left;width:100%;animation:rise .5s both}
+.node:nth-child(2){animation-delay:.06s}.node:nth-child(3){animation-delay:.12s}.node:nth-child(4){animation-delay:.18s}.node:nth-child(5){animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+.node.open{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset,0 8px 30px rgba(240,195,90,.12)}
+.node.lock{opacity:.55;cursor:not-allowed}
+.node .ico{width:64px;height:64px;border-radius:14px;background:var(--ink2);display:grid;place-items:center}
+.node .ico svg{width:44px;height:44px}
+.node h3{font-size:22px}
+.node .gr-t{color:var(--gold);font-size:17px}
+.node small{color:var(--mute);font-size:15px;display:block;margin-top:2px}
+.stars{display:flex;gap:2px}
+.stars svg{width:18px;height:18px}
+.stars .off{opacity:.25}
+
+/* task card */
+.prog{display:flex;gap:6px;margin-bottom:14px}
+.prog i{flex:1;height:7px;border-radius:5px;background:var(--ink2)}
+.prog i.done{background:var(--gold)}
+.prog i.now{background:var(--mint)}
+.card{background:rgba(23,29,74,.9);border:1px solid var(--line);border-radius:20px;padding:22px 20px;animation:rise .35s both}
+.kicker{font-size:14px;letter-spacing:.09em;text-transform:uppercase;color:var(--mute)}
+.q{font-family:var(--display);font-size:clamp(25px,6vw,34px);line-height:1.2;margin:10px 0 6px;text-wrap:balance}
+.q .gap{display:inline-block;min-width:3.2ch;border-bottom:3px solid var(--gold);text-align:center;color:var(--gold)}
+.tr{color:var(--mute);font-size:16px;min-height:22px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.say{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--ink2);display:grid;place-items:center;padding:0}
+.say svg{width:20px;height:20px}
+.opts{display:grid;gap:10px;margin-top:16px}
+.opt{background:var(--ink2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-family:var(--display);font-size:22px;transition:transform .12s,border-color .12s}
+.opt:hover:not([disabled]){border-color:var(--gold);transform:translateX(3px)}
+.opt.ok{background:rgba(127,224,200,.16);border-color:var(--mint);animation:pop .4s}
+.opt.bad{background:rgba(255,141,161,.14);border-color:var(--rose);animation:shake .4s}
+@keyframes pop{40%{transform:scale(1.03)}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.fb{margin-top:16px;padding:12px 14px;border-radius:12px;font-size:17px;display:none}
+.fb.show{display:block;animation:rise .3s both}
+.fb.good{background:rgba(127,224,200,.12);border:1px solid var(--mint)}
+.fb.nope{background:rgba(255,141,161,.1);border:1px solid var(--rose)}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:18px;flex-wrap:wrap}
+
+/* order */
+.slot{min-height:58px;border:2px dashed var(--line);border-radius:14px;padding:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+.bank{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;min-height:48px}
+.tok{background:var(--ink2);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-family:var(--display);font-size:21px}
+.tok:hover{border-color:var(--gold)}
+.slot.ok{border-color:var(--mint);border-style:solid}
+.slot.bad{border-color:var(--rose);animation:shake .4s}
+.end{font-family:var(--display);font-size:24px;color:var(--mute)}
+
+/* match */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.cols .col{display:grid;gap:10px;align-content:start;min-width:0}
+.mt{background:var(--ink2);border:1px solid var(--line);border-radius:12px;padding:12px 10px;text-align:center;font-size:19px;overflow-wrap:anywhere}
+.mt.g{font-family:var(--display);font-size:21px}
+.mt.sel{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset}
+.mt.done{background:rgba(127,224,200,.16);border-color:var(--mint);pointer-events:none}
+.mt.bad{border-color:var(--rose);animation:shake .4s}
+
+/* reward */
+.reward{text-align:center}
+.reward h2{font-size:32px;color:var(--gold)}
+.chest{margin:16px auto 6px;width:180px;height:150px;position:relative;background:none;border:0;padding:0}
+.chest .lid{position:absolute;left:0;right:0;top:12px;height:58px;border-radius:50% 50% 8px 8px/70% 70% 8px 8px;background:linear-gradient(#a8742f,#7a4d1b);border:3px solid #43290c;transform-origin:50% 100%;transition:transform .7s cubic-bezier(.3,1.5,.5,1);z-index:2}
+.chest .box{position:absolute;left:6px;right:6px;top:66px;bottom:4px;border-radius:6px 6px 14px 14px;background:linear-gradient(#8a5b22,#5e3a12);border:3px solid #43290c}
+.chest .lock{position:absolute;left:50%;top:56px;width:28px;height:30px;margin-left:-14px;border-radius:6px;background:var(--gold);border:3px solid #6e5012;z-index:3;transition:opacity .3s}
+.chest .glow{position:absolute;left:50%;top:50px;width:150px;height:150px;margin-left:-75px;border-radius:50%;background:radial-gradient(circle,rgba(240,195,90,.9),transparent 65%);opacity:0;transition:opacity .6s .2s;z-index:0}
+.chest:not(.open){animation:wob 1.6s ease-in-out infinite}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-3deg)}60%{transform:rotate(3deg)}}
+.chest.open .lid{transform:rotate(-62deg) translateY(-6px)}
+.chest.open .lock{opacity:0}
+.chest.open .glow{opacity:1}
+.gift{display:none;margin-top:6px}
+.gift.show{display:block;animation:rise .6s both}
+.gift .gico{width:96px;height:96px;margin:0 auto;animation:bob 3.4s ease-in-out infinite}
+.gift .gico svg{width:100%;height:100%}
+.gift h3{font-size:28px;margin-top:6px}
+.gift .gname{color:var(--gold);font-family:var(--display);font-size:24px}
+.gift p{color:var(--mute);margin:4px auto 16px;max-width:34ch}
+
+/* diploma */
+.diploma{border:2px solid var(--gold);border-radius:20px;padding:30px 20px;text-align:center;background:linear-gradient(160deg,rgba(35,43,102,.95),rgba(23,29,74,.95));box-shadow:0 0 0 6px rgba(240,195,90,.1)}
+.diploma .gr{font-size:20px;color:var(--gold);letter-spacing:.12em}
+.diploma h2{font-size:clamp(34px,9vw,52px);margin:10px 0}
+.diploma .who{font-family:var(--display);font-style:italic;font-size:clamp(30px,8vw,44px);color:var(--gold);overflow-wrap:anywhere}
+.shelf{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:20px 0}
+.shelf div{width:58px;height:58px;border-radius:14px;background:var(--ink2);display:grid;place-items:center}
+.shelf svg{width:40px;height:40px}
+.shelf div.empty{opacity:.3}
+
+/* gifts drawer on map */
+.shelf.small div{width:48px;height:48px}
+.shelf.small svg{width:32px;height:32px}
+.sect{margin-top:26px}
+.sect h3{font-size:22px;margin-bottom:4px}
+
+/* effects */
+#fx{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+.cf{position:absolute;top:-16px;width:10px;height:14px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translate3d(var(--dx),110vh,0) rotate(var(--rot))}}
+.svg-g1{fill:var(--gold)}.svg-g2{fill:var(--gold-d)}.svg-m{fill:var(--mint)}.svg-w{fill:#f4f0ff}.svg-i{fill:var(--ink)}.svg-r{fill:var(--rose)}
+.svg-s{stroke:var(--gold);fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+@media (max-width:420px){
+  .node{grid-template-columns:52px 1fr;}
+  .node .ico{width:52px;height:52px}.node .ico svg{width:36px;height:36px}
+  .node .stars{grid-column:2}
+  .card{padding:18px 14px}
+}
+</style>
+<canvas id="sky"></canvas>
+<div class="wrap"><header class="top" id="top"></header><main id="app"></main></div>
+<div id="fx" aria-hidden="true"></div>
+<script>
+/* ---------- Иконки ---------- */
+const IC={
+key:'<svg viewBox="0 0 64 64"><circle class="svg-g1" cx="19" cy="32" r="14"/><circle class="svg-i" cx="19" cy="32" r="5"/><rect class="svg-g1" x="31" y="29" width="29" height="7" rx="2"/><rect class="svg-g1" x="44" y="36" width="6" height="11" rx="1"/><rect class="svg-g1" x="54" y="36" width="6" height="8" rx="1"/></svg>',
+owl:'<svg viewBox="0 0 64 64"><path class="svg-g2" d="M12 14l10 6h20l10-6v22a20 20 0 0 1-40 0z"/><ellipse class="svg-w" cx="32" cy="40" rx="14" ry="15"/><circle class="svg-w" cx="23" cy="27" r="9"/><circle class="svg-w" cx="41" cy="27" r="9"/><circle class="svg-i" cx="23" cy="27" r="4"/><circle class="svg-i" cx="41" cy="27" r="4"/><path class="svg-g1" d="M28 33h8l-4 8z"/></svg>',
+potion:'<svg viewBox="0 0 64 64"><rect class="svg-w" x="25" y="6" width="14" height="14" rx="2"/><path class="svg-w" d="M25 18h14l15 30a8 8 0 0 1-7 12H17a8 8 0 0 1-7-12z"/><path class="svg-m" d="M16 40h32l6 8a8 8 0 0 1-7 12H17a8 8 0 0 1-7-12z"/><circle class="svg-w" cx="26" cy="48" r="3"/><circle class="svg-w" cx="38" cy="52" r="2.2"/><rect class="svg-g2" x="23" y="4" width="18" height="6" rx="2"/></svg>',
+hourglass:'<svg viewBox="0 0 64 64"><rect class="svg-g2" x="10" y="5" width="44" height="7" rx="3"/><rect class="svg-g2" x="10" y="52" width="44" height="7" rx="3"/><path class="svg-w" d="M15 12h34c0 12-8 16-12 20 4 4 12 8 12 20H15c0-12 8-16 12-20-4-4-12-8-12-20z" opacity=".35"/><path class="svg-g1" d="M20 12h24c0 8-6 11-12 14-6-3-12-6-12-14zM26 52c1-6 4-9 6-11 2 2 5 5 6 11z"/></svg>',
+crown:'<svg viewBox="0 0 64 64"><path class="svg-g1" d="M6 20l14 14 12-22 12 22 14-14-5 32H11z"/><rect class="svg-g2" x="11" y="48" width="42" height="8" rx="2"/><circle class="svg-r" cx="32" cy="40" r="4"/><circle class="svg-m" cx="19" cy="42" r="3"/><circle class="svg-m" cx="45" cy="42" r="3"/><circle class="svg-w" cx="6" cy="20" r="3"/><circle class="svg-w" cx="58" cy="20" r="3"/><circle class="svg-w" cx="32" cy="10" r="3"/></svg>',
+star:'<svg viewBox="0 0 24 24"><path class="svg-g1" d="M12 2l3 6.5 7 .9-5.1 4.9 1.3 7L12 18l-6.2 3.3 1.3-7L2 9.4l7-.9z"/></svg>',
+speaker:'<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+gem:'<svg viewBox="0 0 24 24"><path class="svg-m" d="M6 3h12l4 6-10 12L2 9z"/></svg>'
+};
+
+/* ---------- Данные: 5 башен, 4 задания в каждой ---------- */
+const LEVELS=[
+{id:1,gr:'Η Πύλη',ru:'Ворота',topic:'Знакомство и приветствия',ico:'key',
+ gift:{gr:'Το κλειδί',ru:'Ключ',note:'Открывает ворота школы. «Το κλειδί» — ключ, среднего рода.',ico:'key'},
+ tasks:[
+ {t:'quiz',q:'Πώς σε λένε;',tr:'Как тебя зовут?',opts:['Με λένε Άννα.','Είμαι καλά.','Από τη Ρωσία.'],why:'«Με λένε…» — «меня зовут…». «Είμαι καλά» отвечает на «Τι κάνεις;».'},
+ {t:'quiz',q:'Καλημέρα! Τι κάνεις;',tr:'Доброе утро! Как дела?',opts:['Καλά, ευχαριστώ. Εσύ;','Με λένε Νίκο.','Καληνύχτα!'],why:'«Καλά, ευχαριστώ. Εσύ;» — «Хорошо, спасибо. А ты?»'},
+ {t:'quiz',q:'Από πού ___;',tr:'Откуда ты?',gap:1,opts:['είσαι','είμαι','είναι'],why:'С «εσύ» (ты) используем «είσαι». «Από πού είσαι;»'},
+ {t:'order',ru:'Рад(а) с тобой познакомиться.',words:['Χαίρομαι','που','σε','γνωρίζω'],end:'.',why:'Χαίρομαι που σε γνωρίζω — устойчивая фраза при знакомстве.'}
+]},
+{id:2,gr:'Η Βιβλιοθήκη',ru:'Библиотека',topic:'Артикли, род и глаголы в настоящем',ico:'owl',
+ gift:{gr:'Η κουκουβάγια',ru:'Сова',note:'Носит письма между башнями. «Η κουκουβάγια» — женский род.',ico:'owl'},
+ tasks:[
+ {t:'quiz',q:'___ βιβλίο είναι παλιό.',tr:'Книга старая.',gap:1,opts:['Το','Ο','Η'],why:'«Βιβλίο» — средний род, поэтому артикль «το».'},
+ {t:'quiz',q:'Εγώ ___ ένα μαγικό βιβλίο.',tr:'Я читаю волшебную книгу.',gap:1,opts:['διαβάζω','διαβάζεις','διαβάζει'],why:'С «εγώ» глагол оканчивается на -ω: «διαβάζω».'},
+ {t:'match',pairs:[['ο δάσκαλος','учитель'],['η γάτα','кошка'],['το παιδί','ребёнок'],['το βιβλίο','книга']],why:'Артикль выдаёт род: ο — мужской, η — женский, το — средний.'},
+ {t:'order',ru:'Ученики читают в библиотеке.',words:['Οι','μαθητές','διαβάζουν','στη','βιβλιοθήκη'],end:'.',why:'«Οι μαθητές» — мн. число. «Διαβάζουν» — «они читают».'}
+]},
+{id:3,gr:'Τα Φίλτρα',ru:'Зельеварня',topic:'Еда, покупки и заказ',ico:'potion',
+ gift:{gr:'Το φίλτρο',ru:'Зелье',note:'Подарок мастера зелий. «Το φίλτρο» — зелье.',ico:'potion'},
+ tasks:[
+ {t:'quiz',q:'Θέλω ένα ποτήρι ___.',tr:'Хочу стакан воды.',gap:1,opts:['νερό','ψωμί','μήλο'],why:'Стакан (ποτήρι) наполняют жидкостью: «νερό» — вода.'},
+ {t:'quiz',q:'Πόσο κάνει το ψωμί;',tr:'Сколько стоит хлеб?',opts:['Ένα ευρώ.','Στις οκτώ.','Στο σπίτι.'],why:'«Πόσο κάνει…;» спрашивает о цене. Ответ — сумма.'},
+ {t:'match',pairs:[['το γάλα','молоко'],['το μήλο','яблоко'],['το αλάτι','соль'],['το μέλι','мёд']],why:'Все четыре слова среднего рода, артикль «το».'},
+ {t:'order',ru:'Я бы хотел(а) кофе, пожалуйста.',words:['Θα','ήθελα','έναν','καφέ','παρακαλώ'],end:'.',why:'«Θα ήθελα…» — вежливая просьба. Перед «καφές» — «έναν».'}
+]},
+{id:4,gr:'Ο Πύργος του Χρόνου',ru:'Башня Времени',topic:'Прошедшее время (аорист)',ico:'hourglass',
+ gift:{gr:'Η κλεψύδρα',ru:'Песочные часы',note:'Возвращают время на минуту назад. «Η κλεψύδρα» — часы с песком.',ico:'hourglass'},
+ tasks:[
+ {t:'quiz',q:'Χθες ___ στη σχολή.',tr:'Вчера я ходил(а) в школу.',gap:1,opts:['πήγα','πηγαίνω','θα πάω'],why:'«Χθες» (вчера) требует прошедшего: «πήγα» — аорист от «πηγαίνω».'},
+ {t:'quiz',q:'Ο Νίκος ___ ένα γράμμα.',tr:'Никос написал письмо.',gap:1,opts:['έγραψε','γράφει','θα γράψει'],why:'«Έγραψε» — «он написал». Аорист часто с приставкой «ε-».'},
+ {t:'quiz',q:'Τι έκανες το Σάββατο;',tr:'Что ты делал(а) в субботу?',opts:['Είδα μια ταινία.','Βλέπω μια ταινία.','Θα δω μια ταινία.'],why:'Вопрос о прошлом, значит «είδα» — «я увидел(а)».'},
+ {t:'order',ru:'Вчера вечером мы видели сон.',words:['Χθες','το','βράδυ','είδαμε','ένα','όνειρο'],end:'.',why:'«Είδαμε» — «мы видели». Окончание -αμε — «мы» в прошедшем.'}
+]},
+{id:5,gr:'Το Μεγάλο Δωμάτιο',ru:'Большой зал',topic:'Финальное испытание: всё вместе',ico:'crown',
+ gift:{gr:'Το στέμμα',ru:'Корона',note:'Знак выпускника школы. «Το στέμμα» — корона.',ico:'crown'},
+ tasks:[
+ {t:'quiz',q:'Τι ώρα είναι; 07:30',tr:'Который час? 07:30',opts:['Επτά και μισή.','Οκτώ παρά τέταρτο.','Έξι και τέταρτο.'],why:'«Και μισή» — «и половина»: семь тридцать.'},
+ {t:'quiz',q:'Αύριο ___ στην Αθήνα.',tr:'Завтра мы поедем в Афины.',gap:1,opts:['θα πάμε','πήγαμε','πήγαινα'],why:'«Αύριο» — завтра. Будущее: «θα» + глагол.'},
+ {t:'match',pairs:[['Δευτέρα','понедельник'],['Τετάρτη','среда'],['Παρασκευή','пятница'],['Κυριακή','воскресенье']],why:'Τετάρτη — «четвёртая», Παρασκευή — «пятая» (день).'},
+ {t:'order',ru:'Мне нравится читать книги о магии.',words:['Μου','αρέσει','να','διαβάζω','βιβλία','μαγείας'],end:'.',why:'«Μου αρέσει να…» — «мне нравится…» + глагол.'}
+]}
+];
+</script>
+<script>
+/* ---------- Состояние ---------- */
+const KEY='astropi-quest-v1';
+let S={name:'',unlocked:0,stars:[0,0,0,0,0],gifts:[],xp:0};
+try{const r=JSON.parse(localStorage.getItem(KEY)||'null');if(r&&typeof r==='object')S=Object.assign(S,r)}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s);
+const app=$('#app'),top_=$('#top');
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let run=null;
+
+/* ---------- Звук (греческое произношение, если доступно) ---------- */
+function say(t){try{const u=new SpeechSynthesisUtterance(t.replace('___',''));u.lang='el-GR';u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+const canSay=()=>{try{return 'speechSynthesis' in window}catch(e){return false}};
+const sayBtn=t=>canSay()?`<button class="say" data-say="${esc(t)}" aria-label="Послушать по-гречески">${IC.speaker}</button>`:'';
+document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(b)say(b.dataset.say)});
+
+/* ---------- Эффекты ---------- */
+function confetti(n=36){
+  if(reduce)return;
+  const fx=$('#fx'),cols=['#f0c35a','#7fe0c8','#ff8da1','#f1edff','#9aa6ff'];
+  for(let i=0;i<n;i++){
+    const d=document.createElement('i');d.className='cf';
+    d.style.left=Math.random()*100+'%';d.style.background=cols[i%cols.length];
+    d.style.setProperty('--dx',(Math.random()*160-80)+'px');d.style.setProperty('--rot',(Math.random()*720-360)+'deg');
+    d.style.animationDuration=(1.8+Math.random()*1.6)+'s';d.style.animationDelay=Math.random()*.4+'s';
+    fx.appendChild(d);setTimeout(()=>d.remove(),4200);
+  }
+}
+(function sky(){
+  const c=$('#sky'),x=c.getContext('2d');let W,H,st=[];
+  function size(){const r=devicePixelRatio||1;W=c.width=innerWidth*r;H=c.height=innerHeight*r;st=Array.from({length:Math.round(innerWidth/7)},()=>({x:Math.random()*W,y:Math.random()*H,r:(Math.random()*1.4+.4)*r,p:Math.random()*6.28,s:.5+Math.random()*1.5}))}
+  let shoot=null;
+  function draw(t){
+    x.clearRect(0,0,W,H);
+    for(const s of st){x.globalAlpha=.35+.65*Math.abs(Math.sin(t/1000*s.s+s.p));x.fillStyle='#f4f0ff';x.beginPath();x.arc(s.x,s.y,s.r,0,6.28);x.fill()}
+    if(!shoot&&Math.random()<.004)shoot={x:Math.random()*W*.8,y:Math.random()*H*.3,l:0};
+    if(shoot){shoot.l+=14;x.globalAlpha=Math.max(0,1-shoot.l/260);x.strokeStyle='#f0c35a';x.lineWidth=2*(devicePixelRatio||1);x.beginPath();x.moveTo(shoot.x+shoot.l,shoot.y+shoot.l*.5);x.lineTo(shoot.x+shoot.l-70,shoot.y+(shoot.l-70)*.5);x.stroke();if(shoot.l>300)shoot=null}
+    x.globalAlpha=1;
+  }
+  size();addEventListener('resize',size);
+  if(reduce){draw(0);return}
+  (function loop(t){draw(t);requestAnimationFrame(loop)})(0);
+})();
+
+/* ---------- Верхняя панель ---------- */
+function bar(){
+  top_.innerHTML=S.name?`<span class="brand">Σχολή Αστερόπη</span><div class="stats"><span class="chip" title="Очки">${IC.gem} <b>${S.xp}</b></span><span class="chip" title="Подарки">${IC.key.replace('<svg','<svg style="width:16px;height:16px"')} <b>${S.gifts.length}/5</b></span></div>`:'<span class="brand">Σχολή Αστερόπη</span>';
+}
+const starsHTML=n=>`<span class="stars" aria-label="${n} из 3 звёзд">${[1,2,3].map(i=>`<span class="${i>n?'off':''}">${IC.star}</span>`).join('')}</span>`;
+
+/* ---------- Экран: старт ---------- */
+function viewStart(){
+  bar();
+  app.innerHTML=`<section class="hero">
+    <div class="candles" aria-hidden="true"><div class="candle"></div><div class="candle"></div><div class="candle"></div><div class="candle"></div><div class="candle"></div></div>
+    <h1>Школа Астеропи</h1>
+    <p class="sub">Пройдите пять башен греческого уровня A2, открывайте подарки и получите диплом волшебника.</p>
+    <form class="namebox" id="nf"><input id="nm" maxlength="24" placeholder="Ваше имя" aria-label="Ваше имя" autocomplete="off"><button class="btn" type="submit">Войти в школу</button></form>
+  </section>`;
+  $('#nf').onsubmit=e=>{e.preventDefault();const v=$('#nm').value.trim();if(!v){$('#nm').focus();return}S.name=v;save();viewMap()};
+}
+
+/* ---------- Экран: карта башен ---------- */
+function viewMap(){
+  bar();
+  const all=S.gifts.length===5&&S.unlocked>=5;
+  app.innerHTML=`<div class="intro"><h2>Καλώς ήρθες, ${esc(S.name)}!</h2><p>Выберите открытую башню. Каждая даёт подарок за прохождение.</p></div>
+  <ol class="path">${LEVELS.map((L,i)=>{
+    const open=i<=S.unlocked,done=S.stars[i]>0;
+    return `<li><button class="node ${open?'open':'lock'}" data-lv="${i}" ${open?'':'disabled'} aria-label="${L.ru}">
+      <span class="ico">${open?IC[L.ico]:'<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" fill="#6c74b8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#6c74b8" stroke-width="2"/></svg>'}</span>
+      <span><h3>${L.ru}</h3><span class="gr-t gr">${L.gr}</span><small>${L.topic}</small></span>
+      ${done?starsHTML(S.stars[i]):''}</button></li>`}).join('')}</ol>
+  <div class="sect"><h3>Ваши подарки</h3><div class="shelf small">${LEVELS.map((L,i)=>`<div class="${S.gifts.includes(i)?'':'empty'}" title="${S.gifts.includes(i)?L.gift.ru:'Ещё закрыто'}">${S.gifts.includes(i)?IC[L.gift.ico]:'<svg viewBox="0 0 24 24"><text x="12" y="17" text-anchor="middle" font-size="16" fill="#a9aedb">?</text></svg>'}</div>`).join('')}</div></div>
+  ${all?'<div class="sect"><button class="btn" id="dip">Посмотреть диплом</button></div>':''}
+  <div class="sect"><button class="ghost" id="rst">Начать сначала</button></div>`;
+  app.querySelectorAll('.node.open').forEach(b=>b.onclick=()=>startLevel(+b.dataset.lv));
+  if(all)$('#dip').onclick=viewDiploma;
+  let armed=false;$('#rst').onclick=e=>{if(!armed){armed=true;e.target.textContent='Точно стереть прогресс? Нажмите ещё раз';return}S={name:'',unlocked:0,stars:[0,0,0,0,0],gifts:[],xp:0};save();viewStart()};
+}
+</script>
+<script>
+/* ---------- Прохождение башни ---------- */
+function startLevel(i){run={lv:i,k:0,mist:0,gain:0};viewTask()}
+function viewTask(){
+  const L=LEVELS[run.lv],T=L.tasks[run.k];
+  bar();
+  const prog=`<div class="prog" aria-label="Задание ${run.k+1} из ${L.tasks.length}">${L.tasks.map((_,j)=>`<i class="${j<run.k?'done':j===run.k?'now':''}"></i>`).join('')}</div>`;
+  const head=`<div class="row" style="justify-content:space-between;margin-bottom:10px"><span class="kicker">${L.ru} · ${run.k+1}/${L.tasks.length}</span><button class="ghost" id="back">К карте</button></div>`;
+  app.innerHTML=head+prog+`<div class="card" id="card"></div>`;
+  $('#back').onclick=viewMap;
+  ({quiz:taskQuiz,order:taskOrder,match:taskMatch})[T.t](T,$('#card'));
+}
+function qHTML(T,label){
+  const q=esc(T.q).replace('___','<span class="gap">&nbsp;?&nbsp;</span>');
+  return `<span class="kicker">${label}</span><div class="row" style="margin-top:6px"><p class="q" id="qq" style="flex:1;min-width:0">${q}</p>${sayBtn(T.q)}</div><p class="tr" id="tr"></p>
+   <div class="row"><button class="ghost" id="hint">Показать перевод</button></div>`;
+}
+function bindHint(T){const h=$('#hint');if(h)h.onclick=()=>{$('#tr').textContent=T.tr;h.remove()}}
+function fb(card,ok,html){const f=card.querySelector('.fb');f.className='fb show '+(ok?'good':'nope');f.innerHTML=html}
+function nextBtn(card){
+  const L=LEVELS[run.lv];
+  const last=run.k===L.tasks.length-1;
+  const b=card.querySelector('.foot');b.innerHTML=`<span></span><button class="btn" id="nx">${last?'Завершить башню':'Дальше'}</button>`;
+  $('#nx').focus();
+  $('#nx').onclick=()=>{if(last)finishLevel();else{run.k++;viewTask()}};
+}
+function good(card,T){run.gain+=10;S.xp+=10;confetti(18);bar();fb(card,true,'<b>Верно!</b> '+esc(T.why));nextBtn(card)}
+
+function taskQuiz(T,card){
+  const opts=shuffle(T.opts.map((o,i)=>({o,ok:i===0})));
+  card.innerHTML=qHTML(T,T.gap?'Вставьте слово':'Выберите ответ')+`<div class="opts">${opts.map((x,i)=>`<button class="opt" data-i="${i}">${esc(x.o)}</button>`).join('')}</div><div class="fb"></div><div class="foot"><span></span></div>`;
+  bindHint(T);
+  card.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    const x=opts[+b.dataset.i];
+    if(x.ok){
+      card.querySelectorAll('.opt').forEach(e=>e.disabled=true);b.classList.add('ok');
+      if(T.gap)card.querySelector('.gap').textContent=x.o;
+      good(card,T);
+    }else{
+      b.classList.add('bad');b.disabled=true;run.mist++;
+      fb(card,false,'Почти. Попробуйте другой вариант.');
+    }
+  });
+}
+
+function taskOrder(T,card){
+  let bank=shuffle(T.words.map((w,i)=>({w,i})));
+  if(bank.map(b=>b.w).join()===T.words.join())bank.reverse();
+  let slot=[];
+  card.innerHTML=`<span class="kicker">Соберите предложение</span><p class="q" style="margin-bottom:2px">${esc(T.ru)}</p><p class="tr">Нажимайте на слова по порядку.</p>
+   <div class="slot" id="slot" aria-live="polite"></div><div class="bank" id="bank"></div>
+   <div class="fb"></div><div class="foot"><button class="ghost" id="clr">Сбросить</button><button class="btn" id="chk" disabled>Проверить</button></div>`;
+  const draw=()=>{
+    $('#slot').innerHTML=slot.map(t=>`<button class="tok" data-s="${t.i}">${esc(t.w)}</button>`).join('')+(slot.length?`<span class="end">${T.end||''}</span>`:'');
+    $('#bank').innerHTML=bank.map(t=>`<button class="tok" data-b="${t.i}">${esc(t.w)}</button>`).join('');
+    $('#chk').disabled=bank.length>0;
+    $('#slot').className='slot';
+    $('#slot').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const k=slot.findIndex(t=>t.i==b.dataset.s);bank.push(slot.splice(k,1)[0]);draw()});
+    $('#bank').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const k=bank.findIndex(t=>t.i==b.dataset.b);slot.push(bank.splice(k,1)[0]);draw()});
+  };
+  draw();
+  $('#clr').onclick=()=>{bank=bank.concat(slot);slot=[];draw()};
+  $('#chk').onclick=()=>{
+    const ok=slot.map(t=>t.w).join(' ')===T.words.join(' ');
+    if(ok){$('#slot').classList.add('ok');card.querySelectorAll('.tok').forEach(b=>b.disabled=true);$('#clr').remove();$('#chk').remove();
+      const full=T.words.join(' ')+(T.end||'');
+      good(card,T);card.querySelector('.fb').insertAdjacentHTML('beforeend',` <button class="say" style="display:${canSay()?'inline-grid':'none'};vertical-align:middle" data-say="${esc(full)}" aria-label="Послушать">${IC.speaker}</button>`);
+    }else{run.mist++;$('#slot').classList.add('bad');fb(card,false,'Порядок слов не тот. Нажмите на слово, чтобы вернуть его, и попробуйте снова.')}
+  };
+}
+
+function taskMatch(T,card){
+  const R=shuffle(T.pairs.map(p=>p[1])),G=T.pairs.map(p=>p[0]);let sel=null,left=G.length;
+  card.innerHTML=`<span class="kicker">Найдите пары</span><p class="q" style="margin-bottom:2px">Слово и перевод</p><p class="tr">Нажмите греческое слово, затем его перевод.</p>
+   <div class="cols"><div class="col">${G.map(g=>`<button class="mt g" data-g="${esc(g)}">${esc(g)}</button>`).join('')}</div><div class="col">${R.map(r=>`<button class="mt" data-r="${esc(r)}">${esc(r)}</button>`).join('')}</div></div>
+   <div class="fb"></div><div class="foot"><span></span></div>`;
+  card.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{card.querySelectorAll('[data-g]').forEach(e=>e.classList.remove('sel'));b.classList.add('sel');sel=b;say(b.dataset.g)});
+  card.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{
+    if(!sel){fb(card,false,'Сначала выберите греческое слово слева.');return}
+    const p=T.pairs.find(p=>p[0]===sel.dataset.g);
+    if(p[1]===b.dataset.r){sel.classList.remove('sel');sel.classList.add('done');b.classList.add('done');sel=null;left--;
+      if(!left)good(card,T);else{const f=card.querySelector('.fb');f.className='fb'}}
+    else{run.mist++;b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),450);fb(card,false,'Это не пара. Попробуйте ещё раз.')}
+  });
+}
+
+/* ---------- Награда ---------- */
+function finishLevel(){
+  const L=LEVELS[run.lv],n=run.mist>1?(run.mist>4?1:2):3;
+  const first=!S.gifts.includes(run.lv);
+  if(n>S.stars[run.lv])S.stars[run.lv]=n;
+  S.xp+=n*5;
+  if(first)S.gifts.push(run.lv);
+  S.unlocked=Math.max(S.unlocked,Math.min(run.lv+1,5));
+  save();bar();
+  const last=run.lv===4;
+  app.innerHTML=`<div class="card reward"><span class="kicker">${L.ru} пройдена</span><h2>Браво, ${esc(S.name)}!</h2>
+   <div style="display:flex;justify-content:center;margin:8px 0">${starsHTML(n)}</div>
+   <p class="tr">${run.mist?`Ошибок: ${run.mist}`:'Без единой ошибки'} · +${run.gain+n*5} очков</p>
+   <button class="chest" id="chest" aria-label="Открыть сундук"><span class="glow"></span><span class="lid"></span><span class="lock"></span><span class="box"></span></button>
+   <p class="tr" id="tap">Нажмите на сундук</p>
+   <div class="gift" id="gift"><div class="gico">${IC[L.gift.ico]}</div><div class="gname">${L.gift.gr}</div><h3>${L.gift.ru}</h3><p>${L.gift.note}</p>
+   <div class="row" style="justify-content:center">${sayBtn(L.gift.gr)}<button class="btn" id="go">${last?'Получить диплом':'Дальше'}</button></div></div></div>`;
+  const open=()=>{const c=$('#chest');if(c.classList.contains('open'))return;c.classList.add('open');$('#tap').remove();confetti(60);setTimeout(()=>$('#gift').classList.add('show'),reduce?0:500)};
+  $('#chest').onclick=open;
+  $('#go').onclick=()=>last?viewDiploma():viewMap();
+}
+
+/* ---------- Диплом ---------- */
+function viewDiploma(){
+  bar();
+  const total=S.stars.reduce((a,b)=>a+b,0);
+  app.innerHTML=`<div class="diploma"><div class="gr">ΔΙΑΠΛΩΜΑ · ΣΧΟΛΗ ΑΣΤΕΡΟΠΗ</div><h2>Диплом волшебника</h2><p style="color:var(--mute)">Настоящим подтверждается, что</p>
+   <p class="who">${esc(S.name)}</p><p style="color:var(--mute);margin-top:8px">прошёл(ла) все пять башен греческого уровня A2</p>
+   <div class="shelf">${LEVELS.map(L=>`<div>${IC[L.gift.ico]}</div>`).join('')}</div>
+   <p>Звёзд: <b>${total}/15</b> · Очков: <b>${S.xp}</b></p></div>
+   <div class="row" style="margin-top:18px;justify-content:center"><button class="btn" id="m">К башням</button></div>`;
+  $('#m').onclick=viewMap;setTimeout(()=>confetti(80),250);
+}
+
+/* ---------- Запуск ---------- */
+S.name?viewMap():viewStart();
+</script>
+
+</body></html>
